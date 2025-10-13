@@ -13,11 +13,15 @@ return {
       },
     },
     config = function()
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
+      local caps = require("blink.cmp").get_lsp_capabilities()
       local util = require("lspconfig.util")
-      require("lspconfig").lua_ls.setup { capabilities = capabilities }
-      require("lspconfig").clangd.setup({
-        capabilities = capabilities,
+
+      vim.lsp.config("lua_ls", {
+        capabilities = caps
+      })
+
+      vim.lsp.config("clangd", {
+        capabilities = caps,
         cmd = {
           'clangd',
           '--background-index',
@@ -39,15 +43,17 @@ return {
           },
         },
       })
-      require("lspconfig").ruby_lsp.setup({
-        capabilities = capabilities,
-        mason = false,
+
+      vim.lsp.config("ruby_lsp", {
+        capabilities = caps,
         cmd = { vim.fn.expand("~/.local/share/gem/ruby/3.4.0/bin/ruby-lsp") },
         init_options = {
           formatter = 'standard',
           linters = { 'standard' },
         },
       })
+
+      vim.lsp.enable({ "lua_ls", "clangd", "ruby_lsp" })
 
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('my.lsp', {}),
