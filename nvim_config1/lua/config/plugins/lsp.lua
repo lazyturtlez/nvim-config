@@ -1,6 +1,7 @@
 return {
   {
     "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       'saghen/blink.cmp',
       {
@@ -13,47 +14,11 @@ return {
       },
     },
     config = function()
-      local caps = require("blink.cmp").get_lsp_capabilities()
-      local util = require("lspconfig.util")
-
-      vim.lsp.config("lua_ls", {
-        capabilities = caps
+      local capabilities = require('blink.cmp').get_lsp_capabilities()
+      -- local util = require("lspconfig.util")
+      vim.lsp.config("*", {
+        capabilities = capabilities,
       })
-
-      vim.lsp.config("clangd", {
-        capabilities = caps,
-        cmd = {
-          'clangd',
-          '--background-index',
-          '--clang-tidy',
-          '--log=verbose',
-          '--fallback-style=file',
-        },
-        root_dir = util.root_pattern(
-          ".clang-format", -- ← look here first
-          "compile_commands.json",
-          ".git"
-        ),
-        init_options = {
-          fallbackFlags = {
-            '-std=c++17',
-            '-std=c11',
-            '-Wall',
-            '-Iinclude',
-          },
-        },
-      })
-
-      vim.lsp.config("ruby_lsp", {
-        capabilities = caps,
-        cmd = { vim.fn.expand("~/.local/share/gem/ruby/3.4.0/bin/ruby-lsp") },
-        init_options = {
-          formatter = 'standard',
-          linters = { 'standard' },
-        },
-      })
-
-      vim.lsp.enable({ "lua_ls", "clangd", "ruby_lsp" })
 
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('my.lsp', {}),
